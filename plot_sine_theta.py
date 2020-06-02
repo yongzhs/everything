@@ -1,3 +1,4 @@
+# exercise of polar cordinate plot...
 # https://matplotlib.org/3.1.0/gallery/mplot3d/surface3d.html
 # https://matplotlib.org/mpl_toolkits/mplot3d/tutorial.html
 

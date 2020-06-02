@@ -1,3 +1,4 @@
+# this script pulls data in "Measurement" column, from an excel per testid; it remove duplicate data that has the same barcode
 import pandas as pd
 import xlsxwriter
 import matplotlib.pyplot as plt
