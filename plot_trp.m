@@ -52,8 +52,8 @@ r = sqrt(x.^2 + y.^2 + z.^2); # r is amplitude
 ##colorbar;
 ##axis equal;
 ##
-##
-##figure(2) # x z view
+## https://www.mathworks.com/help/matlab/creating_plots/setting-the-viewpoint-with-azimuth-and-elevation.html
+##figure(2) # x z view, view from -y axis to x z plane
 ##surf(x, y, z, r);
 ##view(0, 0);
 ##shading(gca,'interp');
@@ -64,7 +64,7 @@ r = sqrt(x.^2 + y.^2 + z.^2); # r is amplitude
 ##colorbar;
 ##axis equal;
 ##
-##figure(3) # y z view
+##figure(3) # y z view, view from + x axis to y z plane
 ##surf(x, y, z, r);
 ##view(90, 0);
 ##shading(gca,'interp');
@@ -75,7 +75,7 @@ r = sqrt(x.^2 + y.^2 + z.^2); # r is amplitude
 ##colorbar;
 ##axis equal;
 ##
-##figure(4) # x y view, view from top to bottom
+##figure(4) # x y view, view from + z axis to xy plane
 ##surf(x, y, z, r);
 ##view(0, 90);
 ##shading(gca,'interp');
@@ -86,7 +86,7 @@ r = sqrt(x.^2 + y.^2 + z.^2); # r is amplitude
 ##colorbar;
 ##axis equal;
 
-##figure(5) # reverse x z view
+##figure(5) # reverse x z view, view from +y axis to xz plane
 ##surf(x, y, z, r);
 ##view(180, 0);
 ##shading(gca,'interp');
@@ -97,7 +97,7 @@ r = sqrt(x.^2 + y.^2 + z.^2); # r is amplitude
 ##colorbar;
 ##axis equal;
 ##
-##figure(6) # reverse y z view
+##figure(6) # reverse y z view, view from -x axis to y z plane
 ##surf(x, y, z, r);
 ##view(270, 0);
 ##shading(gca,'interp');
@@ -108,7 +108,7 @@ r = sqrt(x.^2 + y.^2 + z.^2); # r is amplitude
 ##colorbar;
 ##axis equal;
 
-##figure(7) # reverse x y view, view from bottom
+##figure(7) # reverse x y view, view from -z axis to x y plane
 ##surf(x, y, z, r);
 ##view(180, 270);
 ##shading(gca,'interp');
@@ -119,14 +119,14 @@ r = sqrt(x.^2 + y.^2 + z.^2); # r is amplitude
 ##colorbar;
 ##axis equal;
 
-##azimuth plot, theta = 90
+##azimuth plot, theta = 90, xy plane cross section
 ##figure(8)
 ##eirp_azi = eirp((m + 1)/2, :);
 ##eirp_azi(1, n + 1) = eirp_azi(1, 1);
 ##polar(linspace(0, 2 * pi, n + 1), eirp_azi)
 ##title('Azimuth plane \theta = 90')
 
-## elevation plot, phi = 0, 180
+## elevation plot, phi = 0, 180, x z plane cross section
 ##figure(9)
 ##eirp_elev = zeros(1, n + 1);
 ##for i = 1:6
