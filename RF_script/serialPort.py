@@ -235,7 +235,7 @@ class serialPort:  # this class is interface between GUI and RF_PHY api...
 
     def slot_rx(self, m_mainWindow, sg):
         f = int(float(m_mainWindow.m_rxFreq.text()) * 1000)
-        if m_mainWindow.m_rxLoopEnable.isChecked():  # rx loop test section, ACT modulation config
+        if m_mainWindow.m_rxLoopEnable.isChecked():  # rx loop test section, Gen x modulation config
             f_stop = int(float(m_mainWindow.m_rxFreqStop.text()) * 1000)
             f_step = int(float(m_mainWindow.m_rxFreqStep.text()) * 1000)
             if (f_stop - f) % f_step == 0:
@@ -263,9 +263,9 @@ class serialPort:  # this class is interface between GUI and RF_PHY api...
             for f1 in range(f, f_stop, f_step):  # frequency loop...
                 p_count = 0
                 if m_mainWindow.m_rxTestMode.isChecked():  # rx test mode
-                    self.write(RF_PHY.rx_config_test_mode(f1))
+                    self.write(RF_PHY.rx_config_test_mode_gen(f1))
                 else:
-                    self.write(RF_PHY.rx_config(f1))
+                    self.write(RF_PHY.rx_config_gen(f1))
                 sg.setFreq((f1 + 50) * 1000)
                 for p1 in range(p_start, p_stop, p_step):  # power loop...
                     sg.rfOn(False)

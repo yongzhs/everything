@@ -1,13 +1,13 @@
 import datetime
 import math
 import time
-import RF_PHY
 import serial
 import xlsxwriter
 from PyQt5.QtCore import QThread
+import subprocess
+from subprocess import Popen, PIPE
 
-
-class serialPort:  # this class is interface between GUI and RF_PHY api...
+class serialPort:  # not actually serial port...
     def __init__(self):
         self.m_serialPort = serial.Serial()  # Get a Serial instance and configure/open it later
 
@@ -18,7 +18,6 @@ class serialPort:  # this class is interface between GUI and RF_PHY api...
 
     def slot_connect(self, m_mainWindow):
         try:
-            # self.m_serialPort = serial.Serial(m_mainWindow.m_port.currentText(), 115200, timeout=0)
             # print("Connected to " + m_mainWindow.m_port.currentText())
             m_mainWindow.m_connectPort.setEnabled(False)
             m_mainWindow.m_disconnectPort.setEnabled(True)
@@ -31,12 +30,15 @@ class serialPort:  # this class is interface between GUI and RF_PHY api...
             m_mainWindow.m_rssiSweep.setEnabled(True)
             # self.thread = parse(m_mainWindow)
             # self.thread.start()
+            
+            # 2. type the sudo command
+            # 3. try node_age
+            self.shell_write('cd /')
         except:
             print("Error!?")
 
     def slot_disconnect(self, m_mainWindow):
         try:
-            # self.m_serialPort.close()
             # print("Disconnected from " + m_mainWindow.m_port.currentText())
             m_mainWindow.m_connectPort.setEnabled(True)
             m_mainWindow.m_disconnectPort.setEnabled(False)
@@ -51,8 +53,11 @@ class serialPort:  # this class is interface between GUI and RF_PHY api...
         except:
             print("Error!")
 
-    def write(self, packet):
-        self.m_serialPort.write(packet)
+    def shell_write(self, cmd):
+        out = subprocess.run(str(cmd), shell = True, stdout = PIPE, stderr = PIPE)
+        
+        # out = subprocess.run('wsl ./net_mgr -d 10.0.0.2 ' + cmd, shell = True, stdout = PIPE, stderr = PIPE)
+        print(out.stdout)
 
     def read(self):  # convert bytes to list
         data_t = (self.m_serialPort.read(1024))
@@ -269,8 +274,6 @@ class serialPort:  # this class is interface between GUI and RF_PHY api...
         else:  # normal rx mode
             self.write(RF_PHY.rx_config(f))
 
-    def slot_rssiReq(self):
-        self.write(RF_PHY.rssi_req())
 
     def slot_sensitivity_test_mode(self, m_mainWindow, sg):
         self.thread.terminate()
@@ -532,3 +535,6 @@ class parse(QThread):
                 elif msg[0:2] == RF_PHY.ITRON_OTP_READ_RESP:  # OTP read
                     print(msg[11])
                 s = s[ind + 1:]
+
+
+
