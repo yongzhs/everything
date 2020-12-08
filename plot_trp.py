@@ -1,4 +1,4 @@
-# this script reads data from a commercial TRP antenna test results and plot it...
+# this script reads data from a commercial TRP antenna test results and plot it... Python plot does not have good 3D plotting feature
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt

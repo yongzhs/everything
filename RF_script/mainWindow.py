@@ -10,11 +10,8 @@ class MainWindow(QDialog):
     def __init__(self):
         super().__init__()
         self.m_modVal = [0, 1, 2, 3, 4, 8, 0x24, 0x26, 0x43, 0X46, 0x82]
-        self.fskCounter = 0
-        self.ofdmCounter = 0
-        self.oqpskCounter = 0
-        self.pkt_rssi = 0
-        self.noiseFloor = 0
+        self.fskCounter, self.ofdmCounter, self.oqpskCounter, self.pkt_rssi, self.noiseFloor = 0, 0, 0, 0, 0
+        self.res_cal, self.vco_cal = 0, 0
         self.m_serialPort = serialPort.serialPort()
         self.m_spectrumAnalyzer = spectrumAnalyzer.spectrumAnalyzer()
         self.m_signalGenerator = signalGenerator.signalGenerator()
@@ -81,6 +78,7 @@ class MainWindow(QDialog):
         self.m_packets = QLineEdit(self.m_rxContainerWidget)
         self.m_sensitivity = QPushButton("Sensitivity", self.m_rxContainerWidget)
         self.m_rssiSweep = QPushButton("RSSI sweep", self.m_rxContainerWidget)
+        self.m_fullCal = QPushButton("Full cal", self.m_rxContainerWidget)
 
         self.setWindowTitle("RF_PHY")
         self.createTxBox()
@@ -316,6 +314,14 @@ class MainWindow(QDialog):
         m_rxFormLayout.addRow(self.m_rssiSweep)
         self.m_rssiSweep.setEnabled(False)
 
+        m_testHBox1 = QHBoxLayout(self.m_rxContainerWidget)
+        m_testHBox1.addWidget(self.m_sensitivity)
+        m_testHBox1.addWidget(self.m_rssiSweep)
+        m_rxFormLayout.addRow(m_testHBox1)
+
+        m_rxFormLayout.addRow(self.m_fullCal)
+        self.m_fullCal.setEnabled(False)
+
         self.rxGroupBox.setLayout(m_rxFormLayout)
 
         self.m_rxConfig.clicked.connect(lambda: self.m_serialPort.slot_rx(self, self.m_signalGenerator))
@@ -323,6 +329,7 @@ class MainWindow(QDialog):
         self.m_rxLoopEnable.stateChanged.connect(lambda: self.slot_rxLoopEnable())
         self.m_sensitivity.clicked.connect(lambda: self.m_serialPort.slot_sensitivity(self, self.m_signalGenerator))
         self.m_rssiSweep.clicked.connect(lambda: self.m_serialPort.slot_rssi_sweep(self, self.m_signalGenerator))
+        self.m_fullCal.clicked.connect(lambda: self.m_serialPort.slot_full_cal(self))
 
     """ enable the tx test mode section only when selected"""
 

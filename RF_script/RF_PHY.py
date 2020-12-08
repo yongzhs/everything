@@ -55,7 +55,7 @@ ITRON_OTP_READ = [1, 34]  # OTP read
 #        public const int ITRON_DATA_CONFIRM       = 0x1100; // Data Confirm
 ITRON_DATA_INDICATION = [17, 1]  # Data Indication
 ITRON_STATUS_RESPONSE = [17, 2]  # Status Request Response
-#        public const int ITRON_CALIBRATION_RESP   = 0x1104; // Calibration
+ITRON_CALIBRATION_RESP = [17, 4] # Calibration
 #        public const int ITRON_TESTMODE_RX_CONFIRM= 0x1106; // Test mode Rx Start confirm
 #        public const int ITRON_CCA_INDICATION     = 0x1107; // CCA indication
 ITRON_PREAMBLE_INDICATION = [17, 8]  # Preamble indication
@@ -182,7 +182,12 @@ def rssi_req():  # noise floor RSSI request
     return protocol_pack(ITRON_STATUS_REQUEST, data)
 
 
-def full_cal_read():  # full calibration results read request
+def full_cal(): # do full calibration
+    data = [12, 0, 0, 0, 0, 197, 13, 0, 0, 0, 0, 0]
+    return protocol_pack(ITRON_CALIBRATION, data)
+    
+ 
+def full_cal_read():  # full calibration results read only request
     data = [12, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
     return protocol_pack(ITRON_CALIBRATION, data)
 

@@ -29,6 +29,7 @@ class serialPort:  # this class is interface between GUI and RF_PHY api...
             m_mainWindow.m_rssiRequest.setEnabled(True)
             m_mainWindow.m_sensitivity.setEnabled(True)
             m_mainWindow.m_rssiSweep.setEnabled(True)
+            m_mainWindow.m_fullCal.setEnabled(True)
             self.thread = parse(m_mainWindow)
             self.thread.start()
         except:
@@ -47,6 +48,7 @@ class serialPort:  # this class is interface between GUI and RF_PHY api...
             m_mainWindow.m_rssiRequest.setEnabled(False)
             m_mainWindow.m_sensitivity.setEnabled(False)
             m_mainWindow.m_rssiSweep.setEnabled(False)
+            m_mainWindow.m_fullCal.setEnabled(False)
             self.thread.terminate()
         except:
             print("Error!")
@@ -241,46 +243,46 @@ class serialPort:  # this class is interface between GUI and RF_PHY api...
             if (f_stop - f) % f_step == 0:
                 f_stop = f_stop + f_step
             f_num = math.ceil((f_stop - f) / f_step)
-            cableLoss = float(m_mainWindow.m_cableLoss.text())
-            p_start = int(m_mainWindow.m_rxPowerStart.text())
-            p_stop = int(m_mainWindow.m_rxPowerStop.text())
-            p_step = int(m_mainWindow.m_rxPowerStep.text())
-            if (p_stop - p_start) % p_step == 0:
-                p_stop = p_stop + p_step
-            p_num = math.ceil((p_stop - p_start) / p_step)
-            f_count = 0
-            timestamp = datetime.datetime.now().strftime("%m_%d_%H_%M")
-            wb = xlsxwriter.Workbook('rssi_sweep_' + timestamp + '.xlsx')
-            sheet1 = wb.add_worksheet('RSSI')
-            f_xls = f
-            p_xls = p_start
-            for i in range(f_num):
-                sheet1.write(i + 1, 0, f_xls)
-                f_xls = f_xls + f_step
-            for i in range(p_num):
-                sheet1.write(0, i + 1, float(p_xls))
-                p_xls = p_xls + p_step
+            # cableLoss = float(m_mainWindow.m_cableLoss.text())
+            # p_start = int(m_mainWindow.m_rxPowerStart.text())
+            # p_stop = int(m_mainWindow.m_rxPowerStop.text())
+            # p_step = int(m_mainWindow.m_rxPowerStep.text())
+            # if (p_stop - p_start) % p_step == 0:
+            #     p_stop = p_stop + p_step
+            # p_num = math.ceil((p_stop - p_start) / p_step)
+            # f_count = 0
+            # timestamp = datetime.datetime.now().strftime("%m_%d_%H_%M")
+            # wb = xlsxwriter.Workbook('rssi_sweep_' + timestamp + '.xlsx')
+            # sheet1 = wb.add_worksheet('RSSI')
+            # f_xls = f
+            # p_xls = p_start
+            # for i in range(f_num):
+            #     sheet1.write(i + 1, 0, f_xls)
+            #     f_xls = f_xls + f_step
+            # for i in range(p_num):
+            #     sheet1.write(0, i + 1, float(p_xls))
+            #     p_xls = p_xls + p_step
             for f1 in range(f, f_stop, f_step):  # frequency loop...
-                p_count = 0
+                # p_count = 0
                 if m_mainWindow.m_rxTestMode.isChecked():  # rx test mode
                     self.write(RF_PHY.rx_config_test_mode_gen(f1))
                 else:
                     self.write(RF_PHY.rx_config_gen(f1))
-                sg.setFreq((f1 + 50) * 1000)
-                for p1 in range(p_start, p_stop, p_step):  # power loop...
-                    sg.rfOn(False)
-                    sg.setPower(p1 + cableLoss)  # configure the power of signal generator
-                    sg.rfOn(True)
-                    time.sleep(0.2)  # turn on RF and wait
-                    self.write(RF_PHY.rssi_req())  # request for RSSI read
+                # sg.setFreq((f1 + 50) * 1000)
+                # for p1 in range(p_start, p_stop, p_step):  # power loop...
+                #     sg.rfOn(False)
+                #     sg.setPower(p1 + cableLoss)  # configure the power of signal generator
+                #     sg.rfOn(True)
+                    # time.sleep(0.2)  # turn on RF and wait
+                    # self.write(RF_PHY.rssi_req())  # request for RSSI read
                     time.sleep(0.25)
-                    rssi_floor = m_mainWindow.noiseFloor
-                    sheet1.write(f_count + 1, p_count + 1, rssi_floor)
-                    print(str(rssi_floor) + 'dBm, ' + str(f1) + ' KHz, ' + str(p1) + ' dBm input')
-                    p_count = p_count + 1
-                f_count = f_count + 1
-                sg.rfOn(False)
-            wb.close()
+            #         rssi_floor = m_mainWindow.noiseFloor
+            #         sheet1.write(f_count + 1, p_count + 1, rssi_floor)
+            #         print(str(rssi_floor) + 'dBm, ' + str(f1) + ' KHz, ' + str(p1) + ' dBm input')
+            #         p_count = p_count + 1
+            #     f_count = f_count + 1
+            #     sg.rfOn(False)
+            # wb.close()
             return
         if m_mainWindow.m_rxTestMode.isChecked():  # rx test mode
             self.write(RF_PHY.rx_config_test_mode(f))
@@ -460,6 +462,18 @@ class serialPort:  # this class is interface between GUI and RF_PHY api...
             wb.close()
         sg.rfOn(False)
 
+    def slot_full_cal(self, m_mainWindow):
+        timestamp = datetime.datetime.now().strftime("%m_%d_%H_%M")
+        wb = xlsxwriter.Workbook('res_cal' + '_' + timestamp + '.xlsx')
+        sheet1 = wb.add_worksheet('res_cal')
+        nums = 500
+        for i in range(nums):
+            self.write(RF_PHY.full_cal())
+            time.sleep(1)
+            sheet1.write(i, 0, m_mainWindow.res_cal)
+            sheet1.write(i, 1, m_mainWindow.vco_cal)
+        wb.close()
+        
     def getRxParameters(self, m_mainWindow):
         f = int(float(m_mainWindow.m_rxFreq.text()) * 1000)
         f_stop = int(float(m_mainWindow.m_rxFreqStop.text()) * 1000)
@@ -510,9 +524,6 @@ class parse(QThread):
         s = []
         while True:
             time.sleep(0.05)
-            # t = b''
-            # if self.m.m_serialPort.m_serialPort.is_open:
-            # bytesToRead = self.m.m_serialPort.m_serialPort.inWaiting()
             t = self.m.m_serialPort.m_serialPort.read(2048)  # TODO bug here
             if t:
                 for i in range(len(t)):
@@ -520,8 +531,7 @@ class parse(QThread):
             while 62 in s:
                 ind = s.index(62)
                 msg = RF_PHY.protocal_unpack(s[0:ind + 1])
-                # print(msg)
-                if msg[0:2] == RF_PHY.ITRON_DATA_INDICATION:  # only accept our test packet
+                if msg[0:2] == RF_PHY.ITRON_DATA_INDICATION:  # only accept Itron test packet
                     if msg[2] < 0x10 and msg[14] == 250:
                         self.m.fskCounter += 1
                         self.m.m_fskCounter.clear()
@@ -547,6 +557,10 @@ class parse(QThread):
                     self.m.m_rssi.clear()
                     self.m.noiseFloor = RF_PHY.TwoBytesToShort(msg[12:14]) * 0.5
                     self.m.m_rssi.insert(str(self.m.noiseFloor))
-                elif msg[0:2] == RF_PHY.ITRON_OTP_READ_RESP:  # OTP read
-                    print(msg[11])
+                elif msg[0:2] == RF_PHY.ITRON_RX_START_RESP: # RX config response
+                    print(msg[2:4])
+                elif msg[0:2] == RF_PHY.ITRON_CALIBRATION_RESP: # full calibration
+                    print(msg[22: 24])
+                    self.m.res_cal = msg[22] # need only resistor cal
+                    self.m.vco_cal = msg[23]
                 s = s[ind + 1:]
